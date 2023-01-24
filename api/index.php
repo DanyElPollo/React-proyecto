@@ -45,25 +45,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 
-if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-    try {
-        $query = $database->getConexion()->prepare("UPDATE usuarios SET correo=:correo, contrasena=:cont, tipodoc=:tipoDoc, numdoc=:numDoc, ciudad=:ciudad, edad=:edad WHERE id=:id;");
-        $query->bindValue(':id', obtener($_GET['id']), PDO::PARAM_STR);
-        foreach (validacion() as $llave => $valor) {
-            $query->bindValue($llave, $valor, PDO::PARAM_STR);
-        }
-
-        //ejecutando
-        $query->execute();
-        $results = $query->fetchAll(PDO::FETCH_ASSOC);
-        header('Content-Type: application/json');
-        echo json_encode($results);
-        var_dump(validacion());
-    } catch (PDOException $e) {
-        echo ($e->getMessage());
-    }
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     $query = $database->getConexion()->prepare("DELETE  FROM usuarios WHERE id=:id");
     $query->bindValue(':id', obtener($_GET['id']), PDO::PARAM_INT);
