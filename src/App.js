@@ -1,13 +1,15 @@
-//import logo from './logo.svg';
-import './App.css';
-import Registro from './registro/registro';
+import React from 'react'
+// import Registro from './componentes/registro.js'
+// import Usuario from './componentes/Usuario.js'
+// import MiApi from './componentes/MiApi.js'
+import Insert from './componentes/Insertar.js'
 
-function App() {
-    return (
-            <div>
-                <Registro />
-            </div>
-    );
-}
+const App = () => (
+    <div>
+        {/* <MiApi  />
+        <Registro /> */}
+    <Insert />
+    </div>
+)
 
-export default App;
+export default App

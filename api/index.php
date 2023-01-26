@@ -1,7 +1,13 @@
 <?php
+header("Access-Control-Allow-Origin: http://localhost:3000/");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
+header("Access-Control-Allow-Headers: Content-Type");
+
 require_once('conexion.php');
 //se instancia la clase database.
 $database = new Database();
+
+
 
 // verificamos que metodo se va a recibir, y asi realizar el crud.
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -25,23 +31,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // agregamos en consulta la conexion y preparación del sql
-    if ($_GET['id']) {
-        $consulta = $database->getConexion()->prepare("UPDATE usuarios SET correo=:correo, contrasena=:cont, tipodoc=:tipoDoc, numdoc=:numDoc, ciudad=:ciudad, edad=:edad WHERE id=:id;");
+    $json = json_decode(file_get_contents('php://input'), true);
+    if ($json !== null) {
+        try {
+            $consulta = $database->getConexion()->prepare("INSERT INTO usuarios values(:nombre, :apellido, :correo, :cont, :tipoDoc, :numDoc, :ciudad, :edad)");
+            foreach (validacion($json) as $key => $value) {
+                $consulta->bindValue($key, $value, PDO::PARAM_STR);
+            }
+            //  enviamos la consulta
+            $consulta->execute();
+            $result = $consulta->fetchAll(PDO::FETCH_ASSOC);
+            //  retornamos valores 
+            header('Content-Type: application/json');
+            echo json_encode($result);
+        } catch (PDOException $e) {
+            echo ($e->getMessage());
+        }
     } else {
-        $consulta = $database->getConexion()->prepare("INSERT INTO usuarios values(:nombre, :apellido, :correo, :cont, :tipoDoc, :numDoc, :ciudad, :edad)");
+        echo "Datos erroneos para el json";
     }
-    // creamos un foreach para realizar el la insercion
-    foreach (validacion() as $llave => $valor) {
-        $consulta->bindValue($llave, $valor, PDO::PARAM_STR);
-    }
-
-    //  enviamos la consulta
-    $consulta->execute();
-    $result = $consulta->fetchAll(PDO::FETCH_ASSOC);
-    //  retornamos valores 
-    header('Content-Type: application/json');
-    echo json_encode($result);
 }
 
 
@@ -50,20 +58,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     $query->bindValue(':id', obtener($_GET['id']), PDO::PARAM_INT);
     //ejecutando
     $query->execute();
-    header('Content-Type: application/json');
     // echo json_encode($results);
 }
 
-function validacion() {
-    $nombre = isset($_POST["nombre"]) && preg_match("/[a-zA-Z]/", $_POST['nombre']) ? $_POST["nombre"] : false;
-    $apellido = isset($_POST["apellido"]) && !is_numeric($_POST["apellido"]) ? $_POST["apellido"] : false;
-    $correo = isset($_POST["correo"]) && filter_var($_POST['correo'], FILTER_VALIDATE_EMAIL) && preg_match("/[a-zA-Z0-9@_.-]/", $_POST['correo']) ? $_POST["correo"] : false;
-    $contrasena = isset($_POST["cont"]) && preg_match("/[a-zA-Z0-9-]/", $_POST['cont']) ? $_POST["cont"] : false;
-    $tipoDoc = isset($_POST["tipoDoc"]) && !is_numeric($_POST["tipoDoc"]) && !preg_match("/[0-9@_-]/", $_POST['tipoDoc']) ? $_POST["tipoDoc"] : false;
-    $numDoc = isset($_POST["numDoc"]) &&  is_numeric($_POST["numDoc"]) && preg_match("/[0-9]/", $_POST['numDoc']) ? $_POST["numDoc"] : false;
-    $ciudad = isset($_POST["ciudad"]) && !is_numeric($_POST["ciudad"]) && preg_match("/[a-zA-Z]/", $_POST['ciudad']) ? $_POST["ciudad"] : false;
-    $edad = isset($_POST["edad"]) && is_numeric($_POST["edad"])  && preg_match("/[0-9]/", $_POST['edad']) ? $_POST["edad"] : false;
-    if ($nombre && $apellido) {
+function validacion($valor) {
+    $nombre = isset($valor["nombre"]) && preg_match("/[a-zA-Z]/", $valor['nombre']) ? $valor["nombre"] : false;
+    $apellido = isset($valor["apellido"]) && !is_numeric($valor["apellido"]) ? $valor["apellido"] : false;
+    $correo = isset($valor["correo"]) && filter_var($valor['correo'], FILTER_VALIDATE_EMAIL) && preg_match("/[a-zA-Z0-9@_.-]/", $valor['correo']) ? $valor["correo"] : false;
+    $contrasena = isset($valor["cont"]) && preg_match("/[a-zA-Z0-9-]/", $valor['cont']) ? $valor["cont"] : false;
+    $tipoDoc = isset($valor["tipoDoc"]) && !is_numeric($valor["tipoDoc"]) && !preg_match("/[0-9@_-]/", $valor['tipoDoc']) ? $valor["tipoDoc"] : false;
+    $numDoc = isset($valor["numDoc"]) &&  is_numeric($valor["numDoc"]) && preg_match("/[0-9]/", $valor['numDoc']) ? $valor["numDoc"] : false;
+    $ciudad = isset($valor["ciudad"]) && !is_numeric($valor["ciudad"]) && preg_match("/[a-zA-Z]/", $valor['ciudad']) ? $valor["ciudad"] : false;
+    $edad = isset($valor["edad"]) && is_numeric($valor["edad"])  && preg_match("/[0-9]/", $valor['edad']) ? $valor["edad"] : false;
+    if (!isset($_GET['id'])) {
         return $array = [
             ':nombre' => $nombre,
             ':apellido' => $apellido,
@@ -73,16 +80,6 @@ function validacion() {
             ':numDoc' => $numDoc,
             ':ciudad' => $ciudad,
             ':edad' => $edad
-        ];
-    } else {
-        return $array = [
-            ':correo' => $correo,
-            ':cont' => $contrasena,
-            ':tipoDoc' => $tipoDoc,
-            ':numDoc' => $numDoc,
-            ':ciudad' => $ciudad,
-            ':edad' => $edad,
-            ':id' => obtener($_GET['id'])
         ];
     }
 }
