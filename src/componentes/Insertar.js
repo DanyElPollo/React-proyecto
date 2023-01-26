@@ -29,7 +29,6 @@ class Insertar extends Component {
         const { datos } = this.state;
         for (const key in datos) {
             if (datos[key] === "") {
-                ;
                 return alert("Debes rellenar todos los campos");
             }
         }
@@ -41,7 +40,6 @@ class Insertar extends Component {
             .then(res => res.json())
             .then(response => {
                 console.log('Success:', JSON.stringify(response))
-                console.log("datos: ", JSON.stringify(datos));
             })
             .catch(error => {
                 console.log("Error: ", error);
