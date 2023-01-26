@@ -12,22 +12,28 @@ $database = new Database();
 // verificamos que metodo se va a recibir, y asi realizar el crud.
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     // Preparando la consulta
-    if (isset($_GET['id'])) {
-        $query = $database->getConexion()->prepare("SELECT * FROM usuarios WHERE id = :id;");
-        $query->bindValue(':id', obtener($_GET['id']), PDO::PARAM_INT);
-    } else if (isset($_GET['correo']) && isset($_GET['pass'])) {
-        $query = $database->getConexion()->prepare("SELECT * FROM usuarios WHERE correo like :email AND contrasena=:pass;");
-        foreach (obtener() as $llave => $valor) {
-            $query->bindValue($llave, $valor, PDO::PARAM_STR);
+    try {
+        if (isset($_GET['id'])) {
+            $query = $database->getConexion()->prepare("SELECT * FROM usuarios WHERE id = :id;");
+            $query->bindValue(':id', obtener($_GET['id']), PDO::PARAM_INT);
+        } else if (isset($_GET['correo']) && isset($_GET['pass'])) {
+            $query = $database->getConexion()->prepare("SELECT * FROM usuarios WHERE correo like :email AND contrasena=:pass;");
+            foreach (obtener() as $llave => $valor) {
+                $query->bindValue($llave, $valor, PDO::PARAM_STR);
+            }
+        } else {
+            $query = $database->getConexion()->prepare("SELECT * FROM usuarios;");
         }
-    } else {
-        $query = $database->getConexion()->prepare("SELECT * FROM usuarios;");
+        //ejecutando
+        $query->execute();
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        header('Content-Type: application/json');
+        echo json_encode($results);
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+        echo "Quizas las contraseñas no son correctas";
     }
-    //ejecutando
-    $query->execute();
-    $results = $query->fetchAll(PDO::FETCH_ASSOC);
-    header('Content-Type: application/json');
-    echo json_encode($results);
+    
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -75,7 +81,7 @@ function validacion($valor) {
             ':nombre' => $nombre,
             ':apellido' => $apellido,
             ':correo' => $correo,
-            ':cont' => $contrasena,
+            ':cont' => password_hash($contrasena, PASSWORD_BCRYPT, ["cost" => 12]),
             ':tipoDoc' => $tipoDoc,
             ':numDoc' => $numDoc,
             ':ciudad' => $ciudad,
@@ -95,7 +101,7 @@ function obtener($valor = null) {
     } else if ($email && $pass) {
         return $array = [
             ':email' => $email,
-            ':pass' => $pass
+            ':pass' => password_hash($pass, PASSWORD_BCRYPT, ["cost" => 12])
         ];
     }
 }

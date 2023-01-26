@@ -28,7 +28,8 @@ class Insertar extends Component {
         e.preventDefault();
         const { datos } = this.state;
         for (const key in datos) {
-            if (datos[key] === "") {;
+            if (datos[key] === "") {
+                ;
                 return alert("Debes rellenar todos los campos");
             }
         }
@@ -53,7 +54,7 @@ class Insertar extends Component {
     render() {
         return (
             <div>
-                <form onSubmit={this.enviar}>
+                <form className='miForm' onSubmit={this.enviar}>
                     <label htmlFor="nombre">Nombre*
                         <input type="text" name="nombre" onChange={this.inputs} />
                     </label><br />
