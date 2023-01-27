@@ -21,9 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         }
         //ejecutando
         $query->execute();
-        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        $resultado = $query->fetchAll(PDO::FETCH_ASSOC);
         header('Content-Type: application/json');
-        echo json_encode($results);
+        echo json_encode($resultado);
     } catch (PDOException $e) {
         echo $e->getMessage();
         echo "Quizas las contraseñas no son correctas";
