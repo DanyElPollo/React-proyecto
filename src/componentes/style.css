@@ -1,0 +1,57 @@
+body {
+	display: inline-block;
+	height: 100%;
+	width: 100%;
+	background: linear-gradient(to right, #01a9db, #a901db);
+}
+
+.formularios {
+	min-height: auto;
+	display: block;
+	border: 2px solid white;
+	border-radius: 5%;
+	width: auto;
+	height: auto;
+	vertical-align: auto;
+	margin: 50px 100px 10px 10px;
+}
+
+.ingresar {
+	float: left;
+	background-color: #cee3f6;
+}
+
+.tablas tr,
+th,
+td {
+	width: 120px;
+	border: 2px solid white;
+}
+
+.insert {
+	float: right;
+	background-color: #81daf5;
+}
+
+label,
+input,
+select {
+	display: block;
+	margin: 1px 5px 5px;
+}
+
+input[type="submit"] {
+	width: 50%;
+	margin-left: 25%;
+}
+
+/* label{
+margin:10px 100px;
+}
+
+input, select{
+	width: 100px;
+	height: 20px;
+	align-items: center;
+    margin-left: 10px;
+} */
