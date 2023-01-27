@@ -3,62 +3,63 @@ import React, { Component } from "react";
 class Mostrar extends Component {
 
     state = {
-        datos: {
-            nombre: "",
-            apellido: "",
-            correo: "",
-            tipoDoc: "",
-            numDoc: "",
-            ciudad: "",
-            edad: ""
-        }
+        datos: []
     }
 
     recibir = (e) => {
         try {
             e.preventDefault();
-            const { datos } = this.state;
             fetch('http://localhost/Proyecto/api/index.php', {
-                body: JSON.stringify(datos),
+                method: 'GET',
                 headers: { 'Content-Type': 'application/json' }
             })
                 .then(res => res.json())
                 .then(response => {
-                    console.log(response.data[0]);
-                    console.log('Mostrar: ', JSON.stringify(response.data[0].nombre));
                     this.setState({
                         datos: response
                     });
                 }).catch(error => {
-                    console.log(error);
+                    console.log("Super error:  ", error);
                 })
         } catch (e) {
             console.log(e);
         }
     }
 
-
-
     render() {
-        const indices = Object.keys(this.state.datos);
-        const datos = Object.values(this.state.datos);
+        const datos = this.state.datos;
         if (!datos) {
-            return <div>Loading...</div>
+            return <div>No se cargaron los datos...</div>
         }
         return (
             <div >
-                <input type="submit" onChange={this.recibir} value="Generar"></input>
-                <table className="tablas">
+                <table className="tablas" onClick={this.recibir}>
                     <thead>
                         <tr>
-                            {indices.map((dato) => <td key={dato}>{dato}</td>)}
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Correo</th>
+                            <th>Tipo Documento</th>
+                            <th>Numero Documento</th>
+                            <th>Ciudad</th>
+                            <th>Edad</th>
+                            <th>Id</th>
+                            <td><input type="Submit" defaultValue="Cargar"></input></td>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            {datos.map((dato, index) => <td key={index}>{dato}</td>)}
-                            <td><input type="Submit" defaultValue="Eliminar"></input></td>
-                        </tr>
+                        {datos.map((dato, index) =>
+                            <tr key={index}>
+                                <td>{dato.nombre}</td>
+                                <td>{dato.apellido}</td>
+                                <td>{dato.correo}</td>
+                                <td>{dato.tipodoc}</td>
+                                <td>{dato.numdoc}</td>
+                                <td>{dato.ciudad}</td>
+                                <td>{dato.edad}</td>
+                                <td>{dato.id}</td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div >

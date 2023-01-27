@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Mostrar from './Mostrar';
+import Mostrar from './Mostrar.js';
 
 
 class Login extends Component {
@@ -36,7 +36,7 @@ class Login extends Component {
                 return alert("Debes rellenar todos los campos");
             }
         }
-        fetch('http://localhost/Proyecto/api/index.php?login', {
+        fetch('http://localhost/Proyecto/api/index.php?login=true', {
             method: 'POST',
             body: JSON.stringify(datos),
             headers: { 'Content-Type': 'application/json' }
@@ -44,7 +44,7 @@ class Login extends Component {
             .then(res => res.json())
             .then(response => {
                 if (response.status === "permitido") {
-                    console.log('Success:', JSON.stringify(response.data.nombre));
+                    //console.log('Success:', JSON.stringify(response.data[0].nombre));
                     this.setState({
                         login: true
                     })
@@ -56,7 +56,7 @@ class Login extends Component {
                 this.resetear();
             })
             .catch(error => {
-                console.log("Error: ", error);
+                console.log("Prueba: ", error);
             });
     }
 
@@ -83,7 +83,7 @@ class Login extends Component {
                         </label>
                         <input type="submit" value="Ingresar" />
                     </form>
-    }{this.state.login && <Mostrar/>}
+                }{this.state.login && <Mostrar />}
             </div>
         );
     }

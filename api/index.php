@@ -14,9 +14,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     // Preparando la consulta
     try {
         if (!isset($_GET['id'])) {
-            $query = $database->getConexion()->prepare("SELECT * FROM usuarios;");
+            $query = $database->getConexion()->prepare("SELECT nombre, apellido, correo, tipodoc, numdoc, ciudad, edad, id
+            FROM usuarios;");
         } else {
-            $query = $database->getConexion()->prepare("SELECT * FROM usuarios WHERE id = :id;");
+            $query = $database->getConexion()->prepare("SELECT nombre, apellido, correo, tipodoc, numdoc, ciudad, edad, id FROM usuarios WHERE id = :id;");
             $query->bindValue(':id', obtener($_GET['id']), PDO::PARAM_INT);
         }
         //ejecutando
@@ -52,10 +53,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 //  enviamos la consulta
                 $consulta->execute();
-                $result = $consulta->fetchAll(PDO::FETCH_ASSOC);
+                $resultado = $consulta->fetchAll(PDO::FETCH_ASSOC);
                 //  retornamos valores 
                 header('Content-Type: application/json');
-                echo json_encode($result);
+                echo json_encode($resultado);
             }
         } catch (PDOException $e) {
             echo ($e->getMessage());
